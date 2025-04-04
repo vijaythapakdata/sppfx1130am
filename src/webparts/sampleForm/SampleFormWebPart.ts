@@ -11,6 +11,7 @@ import SampleForm from './components/SampleForm';
 import { ISampleFormProps } from './components/ISampleFormProps';
 // import {sp} from "@pnp/sp";
 import { sp } from '@pnp/sp/presets/all';
+
 export interface ISampleFormWebPartProps {
 ListName: string;
 }
@@ -22,13 +23,16 @@ export default class SampleFormWebPart extends BaseClientSideWebPart<ISampleForm
      });
     });
   }
-  public render(): void {
+  public async render(): Promise<void> {
     const element: React.ReactElement<ISampleFormProps> = React.createElement(
       SampleForm,
       {
        ListName:this.properties.ListName,
        siteurl:this.context.pageContext.web.absoluteUrl,
-       context:this.context
+       context:this.context,
+       SingleOption:await this.getChoiceFields(this.context.pageContext.web.absoluteUrl,"Department"),
+       Multioption:await this.getChoiceFields(this.context.pageContext.web.absoluteUrl,"Hobbies"),
+       GenderOption:await this.getChoiceFields(this.context.pageContext.web.absoluteUrl,"Gender")
       }
     );
 
@@ -64,5 +68,35 @@ export default class SampleFormWebPart extends BaseClientSideWebPart<ISampleForm
         }
       ]
     };
+  }
+  //Get Choice Fields
+
+  private async getChoiceFields(siteurl:string,fieldvalue:string):Promise<any>{
+    try{
+      const respone=await fetch(`${siteurl}/_api/web/lists/getbytitle('First List')/fields?$filter=EntityProperyName eq '${fieldvalue}'`,
+
+{
+  method:'GET',
+  headers:{
+    'Accept':'application/json;odata=nometadata',
+    'Content-Type':'application/json;odata=nometadata',
+    'odata-version':''
+  }
+}
+
+      );
+      if(!respone.ok){
+        throw new Error('Error fetching choice fields');
+      }
+      const data=await respone.json();
+      const choice=data?.value[0]?.Choices; //["A","B","C"] 0,1,2
+      return choice.map((item:any)=>({
+        key:item,
+        text:item
+      }));
+    }
+    catch(err){
+      console.error('Error fetching choice fields:',err);
+    }
   }
 }
