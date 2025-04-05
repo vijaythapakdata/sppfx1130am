@@ -31,7 +31,7 @@ export default class SampleFormWebPart extends BaseClientSideWebPart<ISampleForm
        siteurl:this.context.pageContext.web.absoluteUrl,
        context:this.context,
        SingleOption:await this.getChoiceFields(this.context.pageContext.web.absoluteUrl,"Department"),
-       Multioption:await this.getChoiceFields(this.context.pageContext.web.absoluteUrl,"Hobbies"),
+       Multioption:await this.getChoiceFields(this.context.pageContext.web.absoluteUrl,"Skills"),
        GenderOption:await this.getChoiceFields(this.context.pageContext.web.absoluteUrl,"Gender")
       }
     );
@@ -73,7 +73,7 @@ export default class SampleFormWebPart extends BaseClientSideWebPart<ISampleForm
 
   private async getChoiceFields(siteurl:string,fieldvalue:string):Promise<any>{
     try{
-      const respone=await fetch(`${siteurl}/_api/web/lists/getbytitle('First List')/fields?$filter=EntityProperyName eq '${fieldvalue}'`,
+      const respone=await fetch(`${siteurl}/_api/web/lists/getbytitle('First List')/fields?$filter=EntityPropertyName eq '${fieldvalue}'`,
 
 {
   method:'GET',

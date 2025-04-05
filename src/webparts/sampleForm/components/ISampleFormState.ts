@@ -4,5 +4,5 @@ export interface ISampleFormState{
     Age:any;
     Department:string;
     Gender:string;
-    Hobbies:any;
+    Skills:any;
 }

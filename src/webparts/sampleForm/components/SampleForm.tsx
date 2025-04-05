@@ -5,7 +5,7 @@ import { ISampleFormState } from './ISampleFormState';
 import { useState } from 'react';
 import { Web } from '@pnp/sp/webs';
 import { Dialog } from '@microsoft/sp-dialog';
-import { Dropdown, PrimaryButton, TextField } from '@fluentui/react';
+import { ChoiceGroup, Dropdown, IDropdownOption, PrimaryButton, TextField } from '@fluentui/react';
 const  SampleForm:React.FC<ISampleFormProps>=(props)=>{
   const[formState,setFormState]=useState<ISampleFormState>({
     Name:"",
@@ -13,7 +13,7 @@ const  SampleForm:React.FC<ISampleFormProps>=(props)=>{
     Age:"",
     Department:"",
     Gender:"",
-    Hobbies:[]
+    Skills:[]
   });
   const createTask=async()=>{
     let web=Web(props.siteurl);
@@ -22,9 +22,9 @@ await web.lists.getByTitle(props.ListName).items.add({
   Title:formState.Name,
   EmailAddress:formState.EmailAddress,
   Age:parseInt(formState.Age),
-  Deprtment:(formState.Department),
+  Department:(formState.Department),
   Gender:(formState.Gender),
-  Hobbies:{results:formState.Hobbies}
+  Skills:{results:formState.Skills}
 });
 Dialog.alert("Task created successfully");
 setFormState({
@@ -33,7 +33,7 @@ setFormState({
   Age:"",
   Gender:"",
   Department:"",
-  Hobbies:[]
+  Skills:[]
 });
 
     }
@@ -47,6 +47,12 @@ setFormState({
   const handleChange=(field:keyof ISampleFormState,value:string)=>{
    setFormState(prevState=>({...prevState,[field]:value}))
   }
+  //Multiselect dropdown option
+  const onSkillsChange=(_:any,option:IDropdownOption)=>{
+    setFormState(prevState=>({  ...prevState,Skills:option.selected?[...prevState.Skills,option.key as string]:prevState.Skills.filter((key:any)=>key!==option.key)
+
+    }));
+  }
   return(
     <>
     <TextField value={formState.Name} label='Name' onChange={(_,event)=>handleChange("Name",event||"")}/>
@@ -58,11 +64,15 @@ setFormState({
     onChange={(_,option)=>handleChange("Department",option?.key as string)}
     
     />
-     <Dropdown options={props.GenderOption}
+     <ChoiceGroup options={props.GenderOption}
     label='Gender'
     selectedKey={formState.Gender}
     onChange={(_,option)=>handleChange("Gender",option?.key as string)}
     
+    />
+    <Dropdown options={props.Multioption}
+    defaultSelectedKeys={formState.Skills} onChange={onSkillsChange}
+    multiSelect label='Skills'
     />
       <br/>
       <PrimaryButton text='Save' onClick={createTask} iconProps={{iconName:'save'}}/>
