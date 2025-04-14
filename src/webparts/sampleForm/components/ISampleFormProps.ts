@@ -7,5 +7,6 @@ export interface ISampleFormProps {
  SingleOption:any;//Dropdown [1,2,3,4,5] 
  Multioption:any;//checkbox
  GenderOption:any;//any
+ CityOptions:any;// Looukup
 
 }

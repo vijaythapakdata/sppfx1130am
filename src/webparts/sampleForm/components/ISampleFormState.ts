@@ -5,4 +5,6 @@ export interface ISampleFormState{
     Department:string;
     Gender:string;
     Skills:any;
+    City:any;
+    DOB:any;
 }
